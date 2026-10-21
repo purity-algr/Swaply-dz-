@@ -1,13 +1,143 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Swaply DZ</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swaply DZ | Gaming & Tech</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1020;color:#f5f7ff;font-family:Arial,sans-serif}
+header{padding:20px 16px;background:#121a30;border-bottom:1px solid #27324b}
+.logo{font-size:27px;font-weight:800;color:#7c9cff}
+.logo span{color:white}
+header p{color:#aab5d0;font-size:13px;margin-bottom:0}
+main{padding:18px 14px;max-width:1000px;margin:auto}
+.hero{padding:25px 19px;border-radius:18px;background:linear-gradient(135deg,#253d82,#692d91);margin-bottom:22px}
+.hero h1{font-size:30px;margin:0 0 10px}
+.hero p{color:#e0e6ff;line-height:1.5}
+.pill{display:inline-block;background:#111a36;padding:7px 11px;border-radius:20px;font-size:12px;color:#b9caff}
+.search{width:100%;padding:14px;border:1px solid #303b56;border-radius:10px;background:#151d31;color:white;font-size:15px;margin:10px 0 16px}
+.categories{display:flex;gap:8px;overflow-x:auto;padding-bottom:14px}
+.categories button,.sellbtn{background:#202b45;border:1px solid #354361;color:white;border-radius:20px;padding:10px 14px;white-space:nowrap;cursor:pointer}
+.categories button.active{background:#6b83ff;border-color:#6b83ff}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+h2{font-size:20px}
+.small{color:#aab5d0;font-size:12px}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:#151d31;border:1px solid #27334c;border-radius:13px;overflow:hidden}
+.productpic{height:115px;display:flex;align-items:center;justify-content:center;font-size:48px;background:#202b45}
+.cardbody{padding:12px}
+.card h3{font-size:15px;margin:0 0 8px}
+.price{font-weight:bold;color:#8ca6ff;font-size:16px}
+.tag{font-size:11px;color:#aab5d0;margin:8px 0}
+.contact{width:100%;border:0;border-radius:8px;padding:10px;background:#667fff;color:white;font-weight:bold;cursor:pointer}
+.panel{background:#151d31;border:1px solid #27334c;border-radius:14px;padding:16px;margin-top:25px}
+.panel label{display:block;margin:12px 0 6px;font-size:13px;color:#c5cee2}
+.panel input,.panel select{width:100%;padding:12px;border:1px solid #354361;border-radius:8px;background:#0d1426;color:white}
+.calc{background:#202b45;padding:12px;border-radius:9px;margin-top:12px;line-height:1.8}
+footer{text-align:center;color:#8491af;padding:25px 12px;font-size:12px}
+button:active{opacity:.8}
+@media(min-width:650px){.products{grid-template-columns:repeat(3,minmax(0,1fr))}.productpic{height:150px}.hero h1{font-size:38px}}
+</style>
 </head>
 <body>
-  <h1>Welcome to Swaply DZ</h1>
-  <p>Algeria's gaming and tech marketplace.</p>
-  <p>Buy and sell new and used gaming and tech products.</p>
+<header>
+  <div class="logo">Swaply <span>DZ</span></div>
+  <p>Algeria's gaming & tech marketplace</p>
+</header>
+<main>
+  <section class="hero">
+    <span class="pill">🇩🇿 MADE FOR ALGERIA</span>
+    <h1>Find your next upgrade.</h1>
+    <p>Discover gaming gear, consoles, PC parts and tech. New or used, all in one place.</p>
+    <button class="contact" onclick="document.getElementById('sell').scrollIntoView({behavior:'smooth'})">List an item ↓</button>
+  </section>
+
+  <input class="search" id="search" placeholder="🔎 Search products..." oninput="renderProducts()">
+
+  <div class="categories" id="categories">
+    <button class="active" onclick="setCategory('All',this)">All</button>
+    <button onclick="setCategory('Consoles',this)">Consoles</button>
+    <button onclick="setCategory('PC Parts',this)">PC Parts</button>
+    <button onclick="setCategory('Accessories',this)">Accessories</button>
+    <button onclick="setCategory('Phones',this)">Phones</button>
+  </div>
+
+  <div class="sectionhead">
+    <h2>Explore products</h2>
+    <span class="small">Prices in DZD</span>
+  </div>
+  <div class="products" id="products"></div>
+  <p class="small" id="empty" style="display:none">No matching products found.</p>
+
+  <section class="panel" id="sell">
+    <h2>Sell on Swaply DZ</h2>
+    <p class="small">Estimate your earnings with our 5% seller commission.</p>
+    <label for="item">Product name</label>
+    <input id="item" placeholder="e.g. Xbox controller">
+    <label for="category">Category</label>
+    <select id="category">
+      <option>Consoles</option><option>PC Parts</option>
+      <option>Accessories</option><option>Phones</option>
+    </select>
+    <label for="condition">Condition</label>
+    <select id="condition"><option>Used</option><option>New</option></select>
+    <label for="priceInput">Selling price (DZD)</label>
+    <input id="priceInput" type="number" min="1" placeholder="e.g. 8000" oninput="calculate()">
+    <div class="calc">
+      Commission (5%): <strong id="fee">0 DZD</strong><br>
+      Seller receives: <strong id="earn">0 DZD</strong>
+    </div>
+    <button class="contact" style="margin-top:14px" onclick="previewListing()">Preview my listing</button>
+    <p class="small" id="preview"></p>
+  </section>
+
+  <p class="small" style="margin-top:24px">Demo version: sample products only. Listings and payments are not live yet.</p>
+</main>
+<footer>Swaply DZ · Gaming & Tech · Algeria 🇩🇿</footer>
+<script>
+const items=[
+ {name:"Xbox Wireless Controller",price:8500,cat:"Accessories",condition:"Used",emoji:"🎮"},
+ {name:"PlayStation 5",price:95000,cat:"Consoles",condition:"Used",emoji:"🕹️"},
+ {name:"Gaming Headset",price:4500,cat:"Accessories",condition:"New",emoji:"🎧"},
+ {name:"Gaming Graphics Card",price:42000,cat:"PC Parts",condition:"Used",emoji:"🖥️"},
+ {name:"Mechanical Keyboard",price:6500,cat:"Accessories",condition:"New",emoji:"⌨️"},
+ {name:"Android Smartphone",price:28000,cat:"Phones",condition:"Used",emoji:"📱"}
+];
+let selected="All";
+function money(n){return Math.round(n).toLocaleString("fr-DZ")+" DZD"}
+function setCategory(cat,btn){
+ selected=cat;
+ document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");renderProducts();
+}
+function renderProducts(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const found=items.filter(p=>(selected==="All"||p.cat===selected)&&p.name.toLowerCase().includes(q));
+ document.getElementById("products").innerHTML=found.map(p=>`
+ <article class="card">
+ <div class="productpic">${p.emoji}</div>
+ <div class="cardbody">
+ <h3>${p.name}</h3>
+ <div class="price">${money(p.price)}</div>
+ <div class="tag">${p.condition} · ${p.cat}</div>
+ <button class="contact" onclick="alert('Demo only: seller contact will be added when Swaply DZ has a backend.')">View item</button>
+ </div></article>`).join("");
+ document.getElementById("empty").style.display=found.length?"none":"block";
+}
+function calculate(){
+ const p=Math.max(0,Number(document.getElementById("priceInput").value)||0);
+ document.getElementById("fee").textContent=money(p*.05);
+ document.getElementById("earn").textContent=money(p*.95);
+}
+function previewListing(){
+ const name=document.getElementById("item").value.trim();
+ const price=Number(document.getElementById("priceInput").value);
+ if(!name||price<=0){document.getElementById("preview").textContent="Enter a product name and a price greater than zero.";return}
+ document.getElementById("preview").textContent="Preview: "+name+" · "+document.getElementById("category").value+" · "+document.getElementById("condition").value+" · "+money(price)+". This is not published; listings are not live yet.";
+}
+renderProducts();
+</script>
 </body>
 </html>
